@@ -44,7 +44,7 @@ namespace SimpleBlog.Controllers
                     .Articles
                     .Where(a => a.Id == id)
                     .Include(a => a.Author)
-                    .First();
+                    .FirstOrDefault();
 
                 if (article == null)
                 {
@@ -70,7 +70,7 @@ namespace SimpleBlog.Controllers
                 {
                     var authorId = database.Users
                         .Where(u => u.UserName == this.User.Identity.Name)
-                        .First()
+                        .FirstOrDefault()
                         .Id;
 
                     article.AuthourId = authorId;
@@ -83,6 +83,52 @@ namespace SimpleBlog.Controllers
             }
 
             return View(article);
+        }
+
+        // GET: Article/Delete
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            using (var database = new BlogDbContext())
+            {
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).FirstOrDefault();
+
+                if (article == null)
+                {
+                    return HttpNotFound();
+                }
+
+                return View(article);
+            }
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public ActionResult DeleteConfirmed(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            using (var database = new BlogDbContext())
+            {
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
+
+                if (article == null)
+                {
+                    return HttpNotFound();
+                }
+
+                database.Articles.Remove(article);
+                database.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
         }
     }
 }
