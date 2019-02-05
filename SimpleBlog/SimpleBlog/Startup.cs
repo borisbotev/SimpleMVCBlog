@@ -1,5 +1,8 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using SimpleBlog.Migrations;
+using SimpleBlog.Models;
+using System.Data.Entity;
 
 [assembly: OwinStartupAttribute(typeof(SimpleBlog.Startup))]
 namespace SimpleBlog
@@ -8,6 +11,7 @@ namespace SimpleBlog
     {
         public void Configuration(IAppBuilder app)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<BlogDbContext, Configuration>()); 
             ConfigureAuth(app);
         }
     }
