@@ -11,6 +11,8 @@ namespace SimpleBlog.Controllers
 {
     public class ArticleController : Controller
     {
+        public EntityState EntryState { get; private set; }
+
         // GET: Article
         public ActionResult Index()
         {
@@ -129,6 +131,56 @@ namespace SimpleBlog.Controllers
 
                 return RedirectToAction("Index");
             }
+        }
+
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            using (var database = new BlogDbContext())
+            {
+
+                var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
+
+                if (article == null)
+                {
+                    return HttpNotFound();
+                }
+
+                var model = new ArticleViewModel();
+                model.Id = article.Id;
+                model.Title = article.Title;
+                model.Content = article.Content;
+
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [ActionName("Edit")]
+        public ActionResult EditConfirmed(ArticleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var database = new BlogDbContext())
+                {
+                    var article = database.Articles.FirstOrDefault(a => a.Id == model.Id);
+
+                    article.Title = model.Title;
+                    article.Content = model.Content;
+
+                    database.Entry(article).State = EntityState.Modified;
+                    database.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+
+            }
+
+            return View(model);
         }
     }
 }

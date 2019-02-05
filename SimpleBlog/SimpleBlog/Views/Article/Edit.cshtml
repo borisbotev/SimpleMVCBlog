@@ -1,16 +1,19 @@
-﻿@model SimpleBlog.Models.Article
+﻿@model SimpleBlog.Models.ArticleViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Edit";
 }
 
 <div class="container">
     <div class="well">
-        <h2>Create Article</h2>
-        @using (Html.BeginForm("Create", "Article", FormMethod.Post, new { @class = "form-horizontal" }))
+        <h2>Edit Article</h2>
+        @using (Html.BeginForm("Edit", "Article", FormMethod.Post, new { @class = "form-horizontal" }))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary("", new { @class = "text-danger" })
+            @Html.ValidationSummary()
+
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.AuthorId)
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Title, new { @class = "control-label col-sm-4" })
@@ -18,6 +21,7 @@
                     @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
                 </div>
             </div>
+
             <div class="form-group">
                 @Html.LabelFor(m => m.Content, new { @class = "control-label col-sm-4" })
                 <div class="col-sm-4">
@@ -28,7 +32,7 @@
             <div class="form-group">
                 <div class="col-sm-4 col-sm-offset-4">
                     @Html.ActionLink("Cancel", "Index", "Article", null, new { @class = "btn btn-default" })
-                    <input type="submit" value="Create" class="btn btn-success" />
+                    <input type="submit" value="Edit" class="btn btn-success" />
                 </div>
             </div>
         }
