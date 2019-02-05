@@ -23,5 +23,10 @@ namespace SimpleBlog.Models
         public string AuthourId { get; set; }
 
         public virtual ApplicationUser Author { get; set; }
+
+        public bool isAuthor(string name)
+        {
+            return this.Author.UserName.Equals(name);
+        }
     }
 }

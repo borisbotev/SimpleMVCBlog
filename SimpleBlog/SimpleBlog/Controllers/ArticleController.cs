@@ -58,11 +58,13 @@ namespace SimpleBlog.Controllers
         }
 
         // GET: Article/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Create(Article article)
         {
@@ -98,6 +100,11 @@ namespace SimpleBlog.Controllers
             using (var database = new BlogDbContext())
             {
                 var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).FirstOrDefault();
+
+                if (!isUserAuthorizedToEdit(article))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
 
                 if (article == null)
                 {
@@ -145,6 +152,11 @@ namespace SimpleBlog.Controllers
 
                 var article = database.Articles.Where(a => a.Id == id).Include(a => a.Author).First();
 
+                if (!isUserAuthorizedToEdit(article))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+
                 if (article == null)
                 {
                     return HttpNotFound();
@@ -182,5 +194,14 @@ namespace SimpleBlog.Controllers
 
             return View(model);
         }
+
+        private bool isUserAuthorizedToEdit(Article article)
+        {
+            bool isAdmin = this.User.IsInRole("Admin");
+            bool isAuthor = article.isAuthor(this.User.Identity.Name);
+
+            return isAuthor || isAdmin;
+        }
+
     }
 }
