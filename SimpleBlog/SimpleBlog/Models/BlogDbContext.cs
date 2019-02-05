@@ -1,6 +1,8 @@
 ﻿namespace SimpleBlog.Models
 {
     using Microsoft.AspNet.Identity.EntityFramework;
+    using System.Data.Entity;
+
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
 
 
@@ -10,6 +12,8 @@
             : base("DefaultConnection", throwIfV1Schema: false)
         {
         }
+
+        public virtual IDbSet<Article> Articles { get; set; }
 
         public static BlogDbContext Create()
         {
